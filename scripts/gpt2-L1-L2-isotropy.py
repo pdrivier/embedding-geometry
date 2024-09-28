@@ -124,10 +124,11 @@ device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
 # compute isoscore
 
 gather = []
-for mpath in MODELS:
+for mpath in tqdm(MODELS):
 
     tokenizer = AutoTokenizer.from_pretrained(mpath)
     mname = mpath.split("/")[1]
+    lang_exposure = mname.split("_")[-1]
 
     for checkpoint in tqdm(CHECKPOINTS):
         
@@ -148,6 +149,7 @@ for mpath in MODELS:
 
         # Populate a dictionary with the isotropy measures
         gather.append({"model": mname, 
+                "language_exposure": lang_exposure,
                 "kdims": kdims,
                 "isoscore": isoscore,
                 "checkpoint": checkpoint
