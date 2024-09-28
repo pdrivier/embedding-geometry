@@ -87,6 +87,10 @@ class MyCorpus:
 
 
 ## Cat's Biliingual models:
+
+MODELS = ["catherinearnett/B-GPT_en_nl_simultaneous",
+          "catherinearnett/B-GPT_en_nl_sequential"]
+
 # Checkpoints are taken at training steps: 0, 10000, 20000, 30000, 40000, 50000, 64000, 64010, 64020, 64030, 64040, 64050, 64060, 64070, 64080, 64090, 64100, 64110, 64120, 64130, 64140, 64150, 64160, 64170, 64180, 64190, 64200, 64300, 64400, 64500, 64600, 64700, 64800, 64900, 65000, 66000, 67000, 68000, 69000, 70000, 80000, 90000, 100000, 110000, 120000, 128000.
 CHECKPOINTS = [0, 10000, 20000, 30000, 40000, 50000, 64000, 64010, 64020, 64030, 64040, 64050, 64060, 64070, 64080, 64090, 64100, 64110, 64120, 64130, 64140, 64150, 64160, 64170, 64180, 64190, 64200, 64300, 64400, 64500, 64600, 64700, 64800, 64900, 65000, 66000, 67000, 68000, 69000, 70000, 80000, 90000, 100000, 110000, 120000, 128000]
 
@@ -119,33 +123,35 @@ device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
 # Iterate through checkpoints for single language model, grab input embedding matrix, and 
 # compute isoscore
 
-mpath = "catherinearnett/B-GPT_en_nl_simultaneous"
 gather = []
-for checkpoint in tqdm(CHECKPOINTS):
+for mpath in MODELS:
 
     tokenizer = AutoTokenizer.from_pretrained(mpath)
-    model = AutoModel.from_pretrained(mpath, revision = str(checkpoint)).to(device)
-    mname = mpath.split("/")[1] + "-check-" 
+    mname = mpath.split("/")[1]
 
-    input_embed = model.wte.weight
-    embed_dim = input_embed.shape[1]
+    for checkpoint in tqdm(CHECKPOINTS):
+        
+        model = AutoModel.from_pretrained(mpath, revision = str(checkpoint)).to(device)
 
-    # Compute the IsoScore for this matrix
-    pca_embed = pca_normalization(input_embed.cpu().detach())
-    diag_embed_cov = get_diag_of_cov(pca_embed)
-    normdiag_embed_cov = normalize_diagonal(diag_embed_cov)
-    isotropy_defect = get_isotropy_defect(normdiag_embed_cov)
+        input_embed = model.wte.weight
+        embed_dim = input_embed.shape[1]
 
-    kdims = get_kdims(isotropy_defect, embed_dim)
-    phi = get_fraction_dims(kdims, embed_dim)
-    isoscore = get_IsoScore(isotropy_defect, embed_dim)
+        # Compute the IsoScore for this matrix
+        pca_embed = pca_normalization(input_embed.cpu().detach())
+        diag_embed_cov = get_diag_of_cov(pca_embed)
+        normdiag_embed_cov = normalize_diagonal(diag_embed_cov)
+        isotropy_defect = get_isotropy_defect(normdiag_embed_cov)
 
-    # Populate a dictionary with the isotropy measures
-    gather.append({"model": mname, 
-            "kdims": kdims,
-            "isoscore": isoscore,
-            "checkpoint": checkpoint
-        })
+        kdims = get_kdims(isotropy_defect, embed_dim)
+        phi = get_fraction_dims(kdims, embed_dim)
+        isoscore = get_IsoScore(isotropy_defect, embed_dim)
+
+        # Populate a dictionary with the isotropy measures
+        gather.append({"model": mname, 
+                "kdims": kdims,
+                "isoscore": isoscore,
+                "checkpoint": checkpoint
+            })
 
 df = pd.DataFrame(gather)
 
