@@ -156,10 +156,18 @@ for mpath in tqdm(MODELS):
             })
 
 df = pd.DataFrame(gather)
+savepath = "results/"
+if not os.path.exists(savepath): 
+    os.mkdir(savepath)
+
+df.to_csv(os.path.join(savepath,"tmp-bgpt-isoscore.csv"))
 
 sns.set(style="whitegrid",font_scale=1.2)
-sns.lineplot(data=df,x="checkpoint",y="kdims")
+sns.lineplot(data=df,x="checkpoint",y="kdims",hue="model")
 plt.show()
+
+
+
 
 
 
