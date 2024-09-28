@@ -125,7 +125,7 @@ for checkpoint in tqdm(CHECKPOINTS):
 
     tokenizer = AutoTokenizer.from_pretrained(mpath)
     model = AutoModel.from_pretrained(mpath, revision = str(checkpoint)).to(device)
-    mname = mpath + "-check-" + str(checkpoint)
+    mname = mpath.split("/")[1] + "-check-" 
 
     input_embed = model.wte.weight
     embed_dim = input_embed.shape[1]
@@ -149,7 +149,9 @@ for checkpoint in tqdm(CHECKPOINTS):
 
 df = pd.DataFrame(gather)
 
-
+sns.set(style="whitegrid",font_scale=1.2)
+sns.lineplot(data=df,x="checkpoint",y="kdims")
+plt.show()
 
 
 
