@@ -1,4 +1,5 @@
 import os
+import shutil
 import torch
 
 import matplotlib.pyplot as plt
@@ -89,7 +90,14 @@ class MyCorpus:
 ## Cat's Biliingual models:
 
 MODELS = ["catherinearnett/B-GPT_en_nl_simultaneous",
-          "catherinearnett/B-GPT_en_nl_sequential"]
+          "catherinearnett/B-GPT_en_nl_sequential",
+          "catherinearnett/B-GPT_en_es_simultaneous",
+          "catherinearnett/B-GPT_en_es_sequential",
+          "catherinearnett/B-GPT_en_el_simultaneous",
+          "catherinearnett/B-GPT_en_el_sequential",
+          "catherinearnett/B-GPT_en_pl_simultaneous", # keeps timing out?
+          "catherinearnett/B-GPT_en_pl_sequential"
+          ]
 
 # Checkpoints are taken at training steps: 0, 10000, 20000, 30000, 40000, 50000, 64000, 64010, 64020, 64030, 64040, 64050, 64060, 64070, 64080, 64090, 64100, 64110, 64120, 64130, 64140, 64150, 64160, 64170, 64180, 64190, 64200, 64300, 64400, 64500, 64600, 64700, 64800, 64900, 65000, 66000, 67000, 68000, 69000, 70000, 80000, 90000, 100000, 110000, 120000, 128000.
 CHECKPOINTS = [0, 10000, 20000, 30000, 40000, 50000, 64000, 64010, 64020, 64030, 64040, 64050, 64060, 64070, 64080, 64090, 64100, 64110, 64120, 64130, 64140, 64150, 64160, 64170, 64180, 64190, 64200, 64300, 64400, 64500, 64600, 64700, 64800, 64900, 65000, 66000, 67000, 68000, 69000, 70000, 80000, 90000, 100000, 110000, 120000, 128000]
@@ -119,9 +127,9 @@ device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
 # isoscore = get_IsoScore(isotropy_defect, input_embed)
 
 
-# TODO: 
-# Iterate through checkpoints for single language model, grab input embedding matrix, and 
+# Iterate through checkpoints for each language model, grab input embedding matrix, and 
 # compute isoscore
+# cache_path = "~/.cache/huggingface/hub/"
 
 gather = []
 for mpath in tqdm(MODELS):
@@ -148,23 +156,33 @@ for mpath in tqdm(MODELS):
         isoscore = get_IsoScore(isotropy_defect, embed_dim)
 
         # Populate a dictionary with the isotropy measures
-        gather.append({"model": mname, 
-                "language_exposure": lang_exposure,
-                "kdims": kdims,
-                "isoscore": isoscore,
-                "checkpoint": checkpoint
-            })
+        gather.append({"model": mname,
+            "language_exposure": lang_exposure,
+            "kdims": kdims,
+            "isoscore": isoscore,
+            "checkpoint": checkpoint})
+
+    ## TODO: Clear the model from the cache to avoid local space issues
+    # cached_folders = os.listdir(cache_path)
+    # model_folder = [f for f in cached_folders if f.startswith("models--")]
+    # shutil.rmtree(model_folder)
+
+
 
 df = pd.DataFrame(gather)
 savepath = "results/"
 if not os.path.exists(savepath): 
     os.mkdir(savepath)
 
-df.to_csv(os.path.join(savepath,"tmp-bgpt-isoscore.csv"))
+df.to_csv(os.path.join(savepath,"tmp2-bgpt-isoscore.csv"))
 
 sns.set(style="whitegrid",font_scale=1.2)
 sns.lineplot(data=df,x="checkpoint",y="kdims",hue="model")
+# sns.lineplot(data=df,x="checkpoint",y="kdims",hue="language_exposure")
+# sns.lineplot(data=df_post0,x="checkpoint",y="kdims",hue="model")
+# sns.lineplot(data=df_post0,x="checkpoint",y="kdims",hue="language_exposure")
 plt.show()
+
 
 
 
