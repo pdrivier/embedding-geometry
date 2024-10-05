@@ -95,7 +95,7 @@ MODELS = ["catherinearnett/B-GPT_en_nl_simultaneous",
           "catherinearnett/B-GPT_en_es_sequential",
           "catherinearnett/B-GPT_en_el_simultaneous",
           "catherinearnett/B-GPT_en_el_sequential",
-          "catherinearnett/B-GPT_en_pl_simultaneous", # keeps timing out?
+          "catherinearnett/B-GPT_en_pl_simultaneous", # keeps timing out at checkpoint 110000?
           "catherinearnett/B-GPT_en_pl_sequential"
           ]
 
@@ -174,13 +174,9 @@ savepath = "results/"
 if not os.path.exists(savepath): 
     os.mkdir(savepath)
 
-df.to_csv(os.path.join(savepath,"tmp2-bgpt-isoscore.csv"))
+df.to_csv(os.path.join(savepath,"bgpt-isoscore.csv"))
 
-sns.set(style="whitegrid",font_scale=1.2)
 sns.lineplot(data=df,x="checkpoint",y="kdims",hue="model")
-# sns.lineplot(data=df,x="checkpoint",y="kdims",hue="language_exposure")
-# sns.lineplot(data=df_post0,x="checkpoint",y="kdims",hue="model")
-# sns.lineplot(data=df_post0,x="checkpoint",y="kdims",hue="language_exposure")
 plt.show()
 
 
