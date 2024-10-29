@@ -90,18 +90,16 @@ class MyCorpus:
 ## Do this in steps if you're on your local machine with small storage
 ## NOTE: deduplication doesn't seem to make a difference for the input embedding dimensionality
 
-MODELS = ["EleutherAI/pythia-14m",
-          "EleutherAI/pythia-70m",
-          "EleutherAI/pythia-160m",
-          "EleutherAI/pythia-410m",
-          "EleutherAI/pythia-1b",
-          "EleutherAI/pythia-1.4b",
-          "EleutherAI/pythia-70m-deduped",
-          "EleutherAI/pythia-160m-deduped",
-          "EleutherAI/pythia-410m-deduped",
-          "EleutherAI/pythia-1b-deduped",
-          "EleutherAI/pythia-1.4b-deduped"
-          ]
+# MODELS = ["EleutherAI/pythia-14m",
+#           "EleutherAI/pythia-70m",
+#           "EleutherAI/pythia-160m",
+#           "EleutherAI/pythia-410m",
+#           "EleutherAI/pythia-1b",
+#           "EleutherAI/pythia-1.4b"
+#           ]
+
+MODELS = ["EleutherAI/pythia-2.8b",
+          "EleutherAI/pythia-6.9b"]
 
 
 # Define a machine device to allocate model to
@@ -160,6 +158,6 @@ savepath = "pythia-inputemb-results/"
 if not os.path.exists(savepath):
     os.mkdir(savepath)
 
-filename = "dedup-pythia-" + MODELS[0].split("pythia-")[1] + "-to-" + MODELS[-1].split("pythia-")[1] + ".csv"
+filename = "pythia-" + MODELS[0].split("pythia-")[1] + "-to-" + MODELS[-1].split("pythia-")[1] + ".csv"
 
 df.to_csv(os.path.join(savepath,filename))
