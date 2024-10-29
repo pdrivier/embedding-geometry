@@ -1,4 +1,16 @@
+import os
+import shutil
+
 from sklearn.decomposition import PCA
+
+
+
+### Define custom function for clearing your model cache, if computer is 
+# 	storage-constrained
+def clear_cache(): 
+
+	return 
+
 
 
 ## Define custom IsoScore functions from Rudman et al. 2022
@@ -75,3 +87,6 @@ def isoscore_wrap(points, embed_dim):
 	the_score = get_IsoScore(isotropy_defect, embed_dim)
 
 	return k, phi, the_score
+
+
+

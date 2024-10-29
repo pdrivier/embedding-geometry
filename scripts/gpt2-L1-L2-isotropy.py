@@ -106,27 +106,6 @@ CHECKPOINTS = [0, 10000, 20000, 30000, 40000, 50000, 64000, 64010, 64020, 64030,
 device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
 
 
-### TEST CODE: 
-
-# mpath = "catherinearnett/B-GPT_en_nl_simultaneous"
-# tokenizer = AutoTokenizer.from_pretrained(mpath)
-# checkpoint = "128000"
-# model = AutoModel.from_pretrained(mpath, revision = checkpoint).to(device)
-
-# # Grab input embeddings, shape (vocab_size x embed_dim)
-# input_embed = model.wte.weight
-
-# # Compute the IsoScore for this matrix
-# pca_embed = pca_normalization(input_embed.cpu().detach())
-# diag_embed_cov = get_diag_of_cov(pca_embed)
-# normdiag_embed_cov = normalize_diagonal(diag_embed_cov)
-# isotropy_defect = get_isotropy_defect(normdiag_embed_cov)
-
-# kdims = get_kdims(isotropy_defect, input_embed)
-# phi = get_fraction_dims(kdims, input_embed)
-# isoscore = get_IsoScore(isotropy_defect, input_embed)
-
-
 # Iterate through checkpoints for each language model, grab input embedding matrix, and 
 # compute isoscore
 # cache_path = "~/.cache/huggingface/hub/"
