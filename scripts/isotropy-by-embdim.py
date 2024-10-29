@@ -111,18 +111,24 @@ device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
 gather = []
 for mpath in tqdm(MODELS):
 
+    ## Load tokenizer
     tokenizer = AutoTokenizer.from_pretrained(mpath)
+
+    ## Grab some model details to store later
     mname = mpath.split("/")[1]
     msize = mname.split("-")[1]
     dedup = mname.split("-")[-1]
 
+    ## Check: is this for a model trained on deduplicated dataset?
     if dedup in msize:
         dedup = 0
     else:
         dedup = 1
         
+    ## Shunt the model to the gpu if available
     model = AutoModel.from_pretrained(mpath).to(device)
 
+    ## Get input embedding matrix
     input_embed = model.get_input_embeddings().weight
     embed_dim = input_embed.shape[1]
 
