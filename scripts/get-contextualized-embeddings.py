@@ -1,4 +1,5 @@
 
+import functools
 import os
 import shutil
 import torch
@@ -145,5 +146,5 @@ layer = 4
 selected_layer = hidden_states[layer][0]
 
 #grab just the embeddings for your target token
-token_embedding = selected_layer[target_sentence_id[0]:target_sentence_id[1]]
+token_embedding = selected_layer[target_sentence_id:target_sentence_id+1]
 
