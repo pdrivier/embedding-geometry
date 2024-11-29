@@ -12,6 +12,7 @@ import random
 
 from datasets import load_dataset, load_from_disk
 from nltk import sent_tokenize
+from sklearn.decomposition import PCA
 from tqdm import tqdm
 from transformers import AutoTokenizer, AutoModel
 
@@ -144,7 +145,7 @@ def split_excerpts(list_of_excerpts):
 sentences = split_excerpts(excerpts)
 
 ### TODO: Getting random subset
-n_rand_sentences = 10
+n_rand_sentences = 800
 random_subset = random.sample(sentences, n_rand_sentences)
 
 #####
@@ -204,27 +205,27 @@ for layer in range(n_layers):
 df_contextualized_tokens = pd.DataFrame(token_embeddings_by_layer)
 
 # Compute number of isotropically used dimensions (Rudman et al. 2022)
-# for layer in range(n_layers+1): 
+for layer in range(n_layers+1): 
 
-# 	matrix = embeddings[layer]
-# 	embed_dim = matrix.shape[1]
+	matrix = embeddings[layer]
+	embed_dim = matrix.shape[1]
 
-#     # Compute the IsoScore for this matrix
-#     pca_embed = pca_normalization(matrix.cpu().detach())
-#     diag_embed_cov = get_diag_of_cov(pca_embed)
-#     normdiag_embed_cov = normalize_diagonal(diag_embed_cov)
-#     isotropy_defect = get_isotropy_defect(normdiag_embed_cov)
+    # Compute the IsoScore for this matrix
+    pca_embed = pca_normalization(matrix)
+    diag_embed_cov = get_diag_of_cov(pca_embed)
+    normdiag_embed_cov = normalize_diagonal(diag_embed_cov)
+    isotropy_defect = get_isotropy_defect(normdiag_embed_cov)
 
-#     kdims = get_kdims(isotropy_defect, embed_dim)
-#     phi = get_fraction_dims(kdims, embed_dim)
-#     isoscore = get_IsoScore(isotropy_defect, embed_dim)
+    kdims = get_kdims(isotropy_defect, embed_dim)
+    phi = get_fraction_dims(kdims, embed_dim)
+    isoscore = get_IsoScore(isotropy_defect, embed_dim)
 
     # Populate a dictionary with the isotropy measures
-    # gather.append({"model": mname,
-    #     "language_exposure": lang_exposure,
-    #     "kdims": kdims,
-    #     "isoscore": isoscore,
-    #     "checkpoint": checkpoint})
+    gather.append({"model": mname,
+        "language_exposure": lang_exposure,
+        "kdims": kdims,
+        "isoscore": isoscore,
+        "checkpoint": checkpoint})
 
 
 # sentence = random_subset[30]
