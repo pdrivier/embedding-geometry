@@ -189,7 +189,7 @@ for i in sentence_lens:
 token_embeddings_by_layer = {}
 n_layers = 12 ## TODO: get this programmatically (and also embedding dim)
 embeddings = np.empty((n_layers, n_rand_sentences,768))
-for layer in range(n_layers+1):
+for layer in range(n_layers):
 	for s in range(n_rand_sentences):
 		index = select_indices_per_sentence[s]
 		embeddings[layer,s,:] = hidden_states[layer][s][index].cpu()
@@ -198,7 +198,7 @@ for layer in range(n_layers+1):
 		# come from
 		token_embeddings_by_layer["layer"] = layer 
 		token_embeddings_by_layer["sentence"] = tokenized_sentences["tokens"][s]
-		token_embeddings_by_layer["token_id"] = tokenized_sentences["input_id"][s][index]
+		token_embeddings_by_layer["token_id"] = tokenized_sentences["input_ids"][s][index]
 		token_embeddings_by_layer["token_str"] = tokenized_sentences["tokens"][s][index]
 
 df_contextualized_tokens = pd.DataFrame(token_embeddings_by_layer)
@@ -220,11 +220,11 @@ df_contextualized_tokens = pd.DataFrame(token_embeddings_by_layer)
 #     isoscore = get_IsoScore(isotropy_defect, embed_dim)
 
     # Populate a dictionary with the isotropy measures
-    gather.append({"model": mname,
-        "language_exposure": lang_exposure,
-        "kdims": kdims,
-        "isoscore": isoscore,
-        "checkpoint": checkpoint})
+    # gather.append({"model": mname,
+    #     "language_exposure": lang_exposure,
+    #     "kdims": kdims,
+    #     "isoscore": isoscore,
+    #     "checkpoint": checkpoint})
 
 
 # sentence = random_subset[30]
