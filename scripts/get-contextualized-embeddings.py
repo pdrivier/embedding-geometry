@@ -164,6 +164,9 @@ checkpoint = CHECKPOINTS[5]
 tokenizer = AutoTokenizer.from_pretrained(mpath)
 model = AutoModel.from_pretrained(mpath, revision = str(checkpoint)).to(device)
 
+mname = mpath.split["/"][1]
+lang_exposure = mname.split("_")[-1]
+
 # for each sentence, 
 ##### tokenize the sentence
 ##### randomly select a token index from the sequence,
@@ -202,15 +205,16 @@ for layer in range(n_layers):
 		token_embeddings_by_layer["token_id"] = tokenized_sentences["input_ids"][s][index]
 		token_embeddings_by_layer["token_str"] = tokenized_sentences["tokens"][s][index]
 
-df_contextualized_tokens = pd.DataFrame(token_embeddings_by_layer)
+df_metadata = pd.DataFrame(token_embeddings_by_layer)
 
 # Compute number of isotropically used dimensions (Rudman et al. 2022)
+gather = []
 for layer in range(n_layers+1): 
 
 	matrix = embeddings[layer]
 	embed_dim = matrix.shape[1]
 
-    # Compute the IsoScore for this matrix
+	# Compute the IsoScore for this matrix
     pca_embed = pca_normalization(matrix)
     diag_embed_cov = get_diag_of_cov(pca_embed)
     normdiag_embed_cov = normalize_diagonal(diag_embed_cov)
@@ -222,20 +226,13 @@ for layer in range(n_layers+1):
 
     # Populate a dictionary with the isotropy measures
     gather.append({"model": mname,
-        "language_exposure": lang_exposure,
+    	"language_exposure": lang_exposure,
+    	"layer": layer,
         "kdims": kdims,
+        "fraction_dims": phi,
         "isoscore": isoscore,
         "checkpoint": checkpoint})
 
-
-# sentence = random_subset[30]
-# inputs = tokenizer(sentence, return_tensors="pt", add_special_tokens=False) #don't want to accidentally select special tokens, so tokenize first without them!
-# target_token_id = random.sample(inputs["input_ids"].tolist()[0],1)
-# target_token = tokenizer.decode(target_token_id)
-# inputs = tokenizer(sentence, return_tensors="pt", add_special_tokens=True).to(device) #retokenize with special tokens
-# token_sequence = inputs["input_ids"][0].tolist()
-# target_sentence_id = [i for i,val in enumerate(token_sequence) if val == target_token_id[0]][0] #use this to find the position of the token index in the sentence
-
-
+df_isodata = pd.concat(gather)
 
 
