@@ -164,7 +164,7 @@ checkpoint = CHECKPOINTS[5]
 tokenizer = AutoTokenizer.from_pretrained(mpath)
 model = AutoModel.from_pretrained(mpath, revision = str(checkpoint)).to(device)
 
-mname = mpath.split["/"][1]
+mname = mpath.split("/")[1]
 lang_exposure = mname.split("_")[-1]
 
 # for each sentence, 
@@ -215,23 +215,23 @@ for layer in range(n_layers+1):
 	embed_dim = matrix.shape[1]
 
 	# Compute the IsoScore for this matrix
-    pca_embed = pca_normalization(matrix)
-    diag_embed_cov = get_diag_of_cov(pca_embed)
-    normdiag_embed_cov = normalize_diagonal(diag_embed_cov)
-    isotropy_defect = get_isotropy_defect(normdiag_embed_cov)
+	pca_embed = pca_normalization(matrix)
+	diag_embed_cov = get_diag_of_cov(pca_embed)
+	normdiag_embed_cov = normalize_diagonal(diag_embed_cov)
+	isotropy_defect = get_isotropy_defect(normdiag_embed_cov)
 
-    kdims = get_kdims(isotropy_defect, embed_dim)
-    phi = get_fraction_dims(kdims, embed_dim)
-    isoscore = get_IsoScore(isotropy_defect, embed_dim)
+	kdims = get_kdims(isotropy_defect, embed_dim)
+	phi = get_fraction_dims(kdims, embed_dim)
+	isoscore = get_IsoScore(isotropy_defect, embed_dim)
 
-    # Populate a dictionary with the isotropy measures
-    gather.append({"model": mname,
-    	"language_exposure": lang_exposure,
-    	"layer": layer,
-        "kdims": kdims,
-        "fraction_dims": phi,
-        "isoscore": isoscore,
-        "checkpoint": checkpoint})
+	# Populate a dictionary with the isotropy measures
+	gather.append({"model": mname,
+		"language_exposure": lang_exposure,
+		"layer": layer,
+	    "kdims": kdims,
+	    "fraction_dims": phi,
+	    "isoscore": isoscore,
+	    "checkpoint": checkpoint})
 
 df_isodata = pd.concat(gather)
 
